@@ -39,10 +39,10 @@ public class TodoListActivity extends AppCompatActivity
         implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         TrashIconProvider.OnClearCompletedListener, TodoEditorFragment.OnTodoEditorCompleteListener {
 
-    public static final String EMPTY_STRING = "";
-
-    private static final String EDITOR_FRAGMENT = "editor_dialog";
     public final int ADD_ACTION_ID = 100;
+
+    private static final String EMPTY_STRING = "";
+    private static final String EDITOR_FRAGMENT = "editor_dialog";
 
     protected TodoAdapter mAdapter;
     protected Bucket<Todo> mTodoBucket;
@@ -104,8 +104,9 @@ public class TodoListActivity extends AppCompatActivity
 
         if (mTrashIconProvider != null) {
             mTrashIconProvider.setOnClearCompletedListener(this);
-            if (mTodoBucket != null)
+            if (mTodoBucket != null) {
                 mTrashIconProvider.setBadgeCount(Todo.countCompleted(mTodoBucket));
+            }
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -120,14 +121,16 @@ public class TodoListActivity extends AppCompatActivity
         String label = tv.getText().toString();
 
         // we don't create blank tasks, but leave the keyboard
-        if (label.equals(EMPTY_STRING))
+        if (label.equals(EMPTY_STRING)) {
             return true;
+        }
 
         tv.getEditableText().clear();
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(tv.getWindowToken(), 0x0);
 
+        // Create a new Todo object, and save to Simperium
         Todo todo = mTodoBucket.newObject();
         todo.setTitle(label);
         todo.setOrder(mAdapter.getCount());
@@ -172,8 +175,9 @@ public class TodoListActivity extends AppCompatActivity
                 mAdapter.requeryBucket(todos);
                 if (mTrashIconProvider != null) {
                     boolean changed = mTrashIconProvider.updateBadgeCount(Todo.countCompleted(todos));
-                    if (changed)
-                        invalidateOptionsMenu();
+                    if (changed) {
+                        supportInvalidateOptionsMenu();
+                    }
                 }
 
             }
@@ -182,8 +186,7 @@ public class TodoListActivity extends AppCompatActivity
 
     @Override
     public void onClearCompleted() {
-        if (mTodoBucket == null)
-            return;
+        if (mTodoBucket == null) return;
 
         Todo.deleteCompleted(mTodoBucket);
     }
@@ -206,8 +209,10 @@ public class TodoListActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0x0);
+        if (getCurrentFocus() != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0x0);
+        }
     }
 
     class TodoAdapter extends CursorAdapter {
@@ -234,8 +239,9 @@ public class TodoListActivity extends AppCompatActivity
 
             Spannable title = new SpannableString(todo.getTitle());
 
-            if (TextUtils.isEmpty(title))
+            if (TextUtils.isEmpty(title)) {
                 title = emptyTitle();
+            }
 
             boolean done = todo.isDone();
 
@@ -256,7 +262,7 @@ public class TodoListActivity extends AppCompatActivity
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = getLayoutInflater().inflate(R.layout.todo_row, null);
+            View view = getLayoutInflater().inflate(R.layout.todo_row, parent, false);
             TextView textView = (TextView) view.findViewById(R.id.label);
             CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
             ImageButton button = (ImageButton) view.findViewById(R.id.edit_button);
@@ -276,9 +282,7 @@ public class TodoListActivity extends AppCompatActivity
                 checkBox = cb;
                 button = b;
             }
-
         }
-
     }
 
     protected SpannableString emptyTitle() {
@@ -288,5 +292,4 @@ public class TodoListActivity extends AppCompatActivity
         title.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.empty_task_text_color)), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return title;
     }
-
 }

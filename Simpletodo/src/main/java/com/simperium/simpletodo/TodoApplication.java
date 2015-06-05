@@ -1,15 +1,15 @@
 package com.simperium.simpletodo;
 
 import android.app.Application;
-import android.content.Intent;
 import android.util.Log;
 
 import com.simperium.Simperium;
-import com.simperium.android.LoginActivity;
 import com.simperium.client.Bucket;
 import com.simperium.client.BucketNameInvalid;
 
 public class TodoApplication extends Application {
+
+    // Simperium and Bucket objects
     Simperium mSimperium;
     Bucket<Todo> mTodoBucket;
 
@@ -17,6 +17,7 @@ public class TodoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // Create Simperium client
         mSimperium = Simperium.newClient(BuildConfig.SIMPERIUM_APP, BuildConfig.SIMPERIUM_KEY, this);
 
         try {
@@ -26,6 +27,7 @@ public class TodoApplication extends Application {
         }
     }
 
+    // Getters
     public Simperium getSimperium() {
         return mSimperium;
     }

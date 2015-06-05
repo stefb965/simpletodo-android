@@ -12,6 +12,18 @@ import java.util.Map;
 
 public class Todo extends BucketObject {
 
+    public static final String DONE_PROPERTY = "done";
+    public static final String TITLE_PROPERTY = "title";
+    public static final String ORDER_PROPERTY = "order";
+
+    public static final int DONE = 1;
+    public static final int NOT_DONE = 0;
+
+    public Todo(String key, JSONObject properties) {
+        super(key, properties);
+    }
+
+    // Configure Simperium Schema for this object
     public static class Schema extends BucketSchema<Todo> {
 
         public static final String BUCKET_NAME = "todo";
@@ -19,9 +31,7 @@ public class Todo extends BucketObject {
         public Schema() {
             // autoIndex indexes all top level properties: done, title and order
             autoIndex();
-            // Todo instances by default have { "done": 0 }
             setDefault(DONE_PROPERTY, NOT_DONE);
-
         }
 
         public String getRemoteName() {
@@ -38,19 +48,6 @@ public class Todo extends BucketObject {
             todo.updateProperties(properties);
             android.util.Log.d("Simpletodo", "Updated properties: " + todo);
         }
-
-    }
-
-
-    public static final String DONE_PROPERTY = "done";
-    public static final String TITLE_PROPERTY = "title";
-    public static final String ORDER_PROPERTY = "order";
-
-    public static final int DONE = 1;
-    public static final int NOT_DONE = 0;
-
-    public Todo(String key, JSONObject properties) {
-        super(key, properties);
     }
 
     public static int countCompleted(Bucket<Todo> bucket) {
@@ -129,5 +126,4 @@ public class Todo extends BucketObject {
         android.util.Log.d("Simpletodo", getProperties().toString());
         super.save();
     }
-
 }

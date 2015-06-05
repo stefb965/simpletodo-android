@@ -1,34 +1,18 @@
 package com.simperium.simpletodo;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
 
-/**
- * A simple {@link android.support.v4.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link com.simperium.simpletodo.TodoEditorFragment.OnTodoEditorCompleteListener} interface
- * to handle interaction events.
- * Use the {@link TodoEditorFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class TodoEditorFragment extends DialogFragment implements TextView.OnEditorActionListener {
 
     private static final String ARG_KEY = "key";
