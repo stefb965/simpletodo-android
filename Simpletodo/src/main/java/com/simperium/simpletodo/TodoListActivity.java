@@ -67,8 +67,7 @@ public class TodoListActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-
-
+        
         TodoApplication app = (TodoApplication) getApplication();
 
         // Prompt for login if we don't have an authorized user
