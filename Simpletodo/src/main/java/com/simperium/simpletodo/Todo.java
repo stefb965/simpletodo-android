@@ -8,6 +8,8 @@ import com.simperium.client.Query;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 public class Todo extends BucketObject {
 
     public static class Schema extends BucketSchema<Todo> {
@@ -26,10 +28,12 @@ public class Todo extends BucketObject {
             return BUCKET_NAME;
         }
 
+        @Override
         public Todo build(String key, JSONObject properties) {
             return new Todo(key, properties);
         }
 
+        @Override
         public void update(Todo todo, JSONObject properties) {
             todo.updateProperties(properties);
             android.util.Log.d("Simpletodo", "Updated properties: " + todo);
@@ -79,7 +83,7 @@ public class Todo extends BucketObject {
     }
 
     protected void updateProperties(JSONObject properties) {
-        this.properties = properties;
+        this.setProperties(properties);
     }
 
     public void toggleDone() {
@@ -88,7 +92,7 @@ public class Todo extends BucketObject {
     }
 
     public String getTitle() {
-        return properties.optString(TITLE_PROPERTY, "");
+        return getProperties().optString(TITLE_PROPERTY, "");
     }
 
     public void setTitle(String title) {
@@ -104,12 +108,12 @@ public class Todo extends BucketObject {
     public boolean isDone() {
         try {
             // is done property an int of 1?
-            return properties.getInt(DONE_PROPERTY) == DONE;
+            return getProperties().getInt(DONE_PROPERTY) == DONE;
         } catch (JSONException e) {
             // done wasn't an int
             try {
                 // is done boolean true?
-                return properties.getBoolean(DONE_PROPERTY);
+                return getProperties().getBoolean(DONE_PROPERTY);
             } catch (JSONException e1) {
                 // this was unexpected, it should have been an int or a boolean but was neither, we'll just return not done in this case
                 return false;
@@ -122,7 +126,7 @@ public class Todo extends BucketObject {
     }
 
     public void save() {
-        android.util.Log.d("Simpletodo", properties.toString());
+        android.util.Log.d("Simpletodo", getProperties().toString());
         super.save();
     }
 

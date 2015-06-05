@@ -1,23 +1,19 @@
 package com.simperium.simpletodo;
 
-import android.app.DialogFragment;
 import android.app.FragmentTransaction;
-import android.app.ListActivity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.media.Image;
-import android.os.Bundle;
-import android.os.IBinder;
 import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
-import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,23 +21,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CursorAdapter;
-import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CheckBox;
+import android.widget.CursorAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.EditText;
 
+import com.simperium.android.LoginActivity;
 import com.simperium.client.Bucket;
-import com.simperium.android.SimperiumService;
 import com.simperium.client.BucketObjectMissingException;
 
-public class TodoListActivity extends SimperiumService.ListActivity
+public class TodoListActivity extends AppCompatActivity
 implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         TrashIconProvider.OnClearCompletedListener, TodoEditorFragment.OnTodoEditorCompleteListener {
 
@@ -51,13 +45,53 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
     public final int ADD_ACTION_ID = 100;
 
     protected TodoAdapter mAdapter;
-    protected Bucket<Todo> mTodos;
+    protected Bucket<Todo> mTodoBucket;
     protected EditText mEditText;
     protected TrashIconProvider mTrashIconProvider;
 
     @Override
-    public Class getServiceClass() {
-        return TodoService.class;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.todo_list);
+
+        mAdapter = new TodoAdapter();
+        ListView listView = (ListView)findViewById(android.R.id.list);
+        listView.setAdapter(mAdapter);
+        listView.setOnItemClickListener(this);
+
+        mEditText = (EditText) findViewById(R.id.new_task_text);
+        //mEditText.setEnabled(false);
+        mEditText.setOnEditorActionListener(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        TodoApplication app = (TodoApplication)getApplication();
+        if (app.getSimperium().needsAuthorization()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+
+        mTodoBucket = app.getTodoBucket();
+
+        if (mTodoBucket != null) {
+            mTodoBucket.start();
+            refreshTodos(mTodoBucket);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (mTodoBucket != null) {
+            mTodoBucket.stop();
+        }
+
+        super.onPause();
     }
 
     @Override
@@ -66,55 +100,20 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         inflater.inflate(R.menu.todo_options, menu);
 
         MenuItem item = menu.findItem(R.id.action_clear_done);
-        mTrashIconProvider = (TrashIconProvider) item.getActionProvider();
+        mTrashIconProvider = (TrashIconProvider) MenuItemCompat.getActionProvider(item);
 
         if (mTrashIconProvider != null) {
             mTrashIconProvider.setOnClearCompletedListener(this);
-            if (mTodos != null)
-                mTrashIconProvider.setBadgeCount(Todo.countCompleted(mTodos));
+            if (mTodoBucket != null)
+                mTrashIconProvider.setBadgeCount(Todo.countCompleted(mTodoBucket));
         }
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.todo_list);
-
-        mAdapter = new TodoAdapter();
-        ListView listView = getListView();
-        // listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(this);
-
-        mEditText = (EditText) findViewById(R.id.new_task_text);
-        mEditText.setEnabled(false);
-        mEditText.setOnEditorActionListener(this);
-
-    }
-
-    @Override
-    public void onSimperiumConnected(SimperiumService service) {
-        TodoService todoService = (TodoService) service;
-        mTodos = todoService.getTodoBucket();
-        mTodos.start();
-        mTodos.addListener(this);
-        refreshTodos(mTodos);
-        mEditText.setEnabled(true);
-
-    }
-
-    @Override
-    public void onSimperiumDisconnected() {
-        mTodos.removeListener(this);
-    }
-
-    @Override
     public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
-        if (actionId != ADD_ACTION_ID)
+        if (actionId != ADD_ACTION_ID || mTodoBucket == null)
             return false;
 
         // clear the text view
@@ -129,10 +128,12 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(tv.getWindowToken(), 0x0);
 
-        Todo todo = mTodos.newObject();
+        Todo todo = mTodoBucket.newObject();
         todo.setTitle(label);
-        todo.setOrder(getListView().getAdapter().getCount());
+        todo.setOrder(mAdapter.getCount());
         todo.save();
+
+        refreshTodos(mTodoBucket);
 
         return true;
     }
@@ -143,6 +144,8 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         todo.toggleDone();
         CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
         checkbox.setChecked(todo.isDone());
+
+        refreshTodos(mTodoBucket);
     }
 
     @Override
@@ -155,19 +158,18 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         refreshTodos(todos);
     }
 
+
     @Override
-    public void onChange(Bucket<Todo> todos, Bucket.ChangeType changeType, String key) {
+    public void onBeforeUpdateObject(Bucket<Todo> bucket, Todo todo) {
+       // noop
+    }
+
+    @Override
+    public void onNetworkChange(Bucket<Todo> todos, Bucket.ChangeType changeType, String s) {
         refreshTodos(todos);
     }
 
-    @Override
-    public void onBeforeUpdateObject(Bucket<Todo> todos, Todo todo) {
-        // no-op
-    }
-
     public void refreshTodos(final Bucket<Todo> todos) {
-
-
         runOnUiThread( new Runnable() {
             @Override
             public void run() {
@@ -180,15 +182,15 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
 
             }
         });
-
     }
 
     @Override
     public void onClearCompleted() {
-        if (mTodos == null)
+        if (mTodoBucket == null)
             return;
 
-        Todo.deleteCompleted(mTodos);
+        Todo.deleteCompleted(mTodoBucket);
+        refreshTodos(mTodoBucket);
     }
 
     public void onEditTodo(Todo todo) {
@@ -202,7 +204,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
     @Override
     public void onTodoEdited(String key, String label) {
         try {
-            Todo todo = mTodos.get(key);
+            Todo todo = mTodoBucket.get(key);
             todo.setTitle(label);
             todo.save();
         } catch (BucketObjectMissingException e) {

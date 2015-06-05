@@ -1,21 +1,18 @@
 package com.simperium.simpletodo;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.ActionProvider;
+import android.support.v4.view.ActionProvider;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.lang.ref.WeakReference;
 
 public class TrashIconProvider extends ActionProvider {
 
     public interface OnClearCompletedListener {
-        public void onClearCompleted();
+        void onClearCompleted();
     }
 
     private WeakReference<OnClearCompletedListener> mListener;
@@ -86,7 +83,7 @@ public class TrashIconProvider extends ActionProvider {
     }
 
     public void setOnClearCompletedListener(OnClearCompletedListener listener) {
-        mListener = new WeakReference<OnClearCompletedListener>(listener);
+        mListener = new WeakReference<>(listener);
     }
 
     public OnClearCompletedListener getOnClearCompletedListener() {

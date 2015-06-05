@@ -3,7 +3,7 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies { classpath 'com.android.tools.build:gradle:0.7.+' }
+    dependencies { classpath 'com.android.tools.build:gradle:1.2.+' }
 }
 
 apply plugin: 'android'
@@ -16,21 +16,20 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:+'
-    debugCompile 'com.simperium:simperium-android-support:0.4.1-rc'
-    releaseCompile 'com.simperium:simperium-android:0.4.1-rc'
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.simperium.android:simperium:0.6.4'
 }
 
 version "1.0.0"
 
 android {
 
-    compileSdkVersion 19
-    buildToolsVersion "19.0.1"
+    compileSdkVersion 22
+    buildToolsVersion "19.1"
 
     defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 19
+        minSdkVersion 14
+        targetSdkVersion 22
         versionCode 1
         versionName version
 

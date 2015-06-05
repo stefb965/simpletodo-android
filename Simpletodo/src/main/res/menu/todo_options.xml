@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_clear_done"
-          android:icon="@drawable/ic_action_discard"
+          android:icon="@drawable/ic_delete_white_24dp"
           android:title="@string/action_clear_done"
-          android:actionProviderClass="com.simperium.simpletodo.TrashIconProvider"
-          android:showAsAction="always" />
+          app:actionProviderClass="com.simperium.simpletodo.TrashIconProvider"
+          app:showAsAction="always" />
 </menu>

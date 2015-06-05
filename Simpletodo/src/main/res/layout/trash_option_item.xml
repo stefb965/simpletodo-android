@@ -9,26 +9,23 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_discard" />
+        android:src="@drawable/ic_delete_white_24dp" />
     <TextView
         android:id="@+id/badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/icon"
         android:layout_alignEnd="@id/icon"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="-2dp"
+        android:layout_marginBottom="-4dp"
         android:minWidth="14dp"
         android:gravity="center"
         android:textColor="@color/badge_text"
         android:textStyle="bold"
-        android:textAlignment="center"
         android:paddingTop="0dp"
         android:paddingBottom="1dp"
         android:paddingLeft="2dp"
-        android:paddingRight="3dp"
-        android:textSize="10dp"
+        android:paddingRight="2dp"
+        android:textSize="10sp"
         android:maxLines="1"
-        android:text="10"
         android:background="@drawable/badge_background" />
 </RelativeLayout>
