@@ -62,11 +62,10 @@ public class TrashIconProvider extends ActionProvider {
 
     @Override
     public boolean onPerformDefaultAction() {
-
         OnClearCompletedListener listener = getOnClearCompletedListener();
-
-        if (listener == null)
+        if (listener == null) {
             return false;
+        }
 
         listener.onClearCompleted();
         return true;

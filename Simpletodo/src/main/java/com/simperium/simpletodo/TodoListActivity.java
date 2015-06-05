@@ -36,12 +36,12 @@ import com.simperium.client.Bucket;
 import com.simperium.client.BucketObjectMissingException;
 
 public class TodoListActivity extends AppCompatActivity
-implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
+        implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         TrashIconProvider.OnClearCompletedListener, TodoEditorFragment.OnTodoEditorCompleteListener {
 
-    public static final String EMPTY_STRING="";
+    public static final String EMPTY_STRING = "";
 
-    private static final String EDITOR_FRAGMENT="editor_dialog";
+    private static final String EDITOR_FRAGMENT = "editor_dialog";
     public final int ADD_ACTION_ID = 100;
 
     protected TodoAdapter mAdapter;
@@ -56,21 +56,19 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         setContentView(R.layout.todo_list);
 
         mAdapter = new TodoAdapter();
-        ListView listView = (ListView)findViewById(android.R.id.list);
+        ListView listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
         mEditText = (EditText) findViewById(R.id.new_task_text);
-        //mEditText.setEnabled(false);
         mEditText.setOnEditorActionListener(this);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        TodoApplication app = (TodoApplication)getApplication();
+        TodoApplication app = (TodoApplication) getApplication();
         if (app.getSimperium().needsAuthorization()) {
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -80,6 +78,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         mTodoBucket = app.getTodoBucket();
 
         if (mTodoBucket != null) {
+            mTodoBucket.addListener(this);
             mTodoBucket.start();
             refreshTodos(mTodoBucket);
         }
@@ -88,6 +87,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
     @Override
     protected void onPause() {
         if (mTodoBucket != null) {
+            mTodoBucket.removeListener(this);
             mTodoBucket.stop();
         }
 
@@ -125,15 +125,13 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
 
         tv.getEditableText().clear();
 
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(tv.getWindowToken(), 0x0);
 
         Todo todo = mTodoBucket.newObject();
         todo.setTitle(label);
         todo.setOrder(mAdapter.getCount());
         todo.save();
-
-        refreshTodos(mTodoBucket);
 
         return true;
     }
@@ -144,8 +142,6 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         todo.toggleDone();
         CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
         checkbox.setChecked(todo.isDone());
-
-        refreshTodos(mTodoBucket);
     }
 
     @Override
@@ -161,7 +157,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
 
     @Override
     public void onBeforeUpdateObject(Bucket<Todo> bucket, Todo todo) {
-       // noop
+        // noop
     }
 
     @Override
@@ -170,7 +166,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
     }
 
     public void refreshTodos(final Bucket<Todo> todos) {
-        runOnUiThread( new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mAdapter.requeryBucket(todos);
@@ -190,7 +186,6 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
             return;
 
         Todo.deleteCompleted(mTodoBucket);
-        refreshTodos(mTodoBucket);
     }
 
     public void onEditTodo(Todo todo) {
@@ -211,7 +206,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
             e.printStackTrace();
         }
 
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0x0);
     }
 
@@ -276,7 +271,7 @@ implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
             public final CheckBox checkBox;
             public final ImageButton button;
 
-            public TodoRowHolder(TextView tv, CheckBox cb, ImageButton b){
+            public TodoRowHolder(TextView tv, CheckBox cb, ImageButton b) {
                 labelView = tv;
                 checkBox = cb;
                 button = b;
