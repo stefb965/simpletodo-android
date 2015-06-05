@@ -68,7 +68,10 @@ public class TodoListActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
+
         TodoApplication app = (TodoApplication) getApplication();
+
+        // Prompt for login if we don't have an authorized user
         if (app.getSimperium().needsAuthorization()) {
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -147,27 +150,6 @@ public class TodoListActivity extends AppCompatActivity
         checkbox.setChecked(todo.isDone());
     }
 
-    @Override
-    public void onSaveObject(Bucket<Todo> todos, Todo todo) {
-        refreshTodos(todos);
-    }
-
-    @Override
-    public void onDeleteObject(Bucket<Todo> todos, Todo todo) {
-        refreshTodos(todos);
-    }
-
-
-    @Override
-    public void onBeforeUpdateObject(Bucket<Todo> bucket, Todo todo) {
-        // noop
-    }
-
-    @Override
-    public void onNetworkChange(Bucket<Todo> todos, Bucket.ChangeType changeType, String s) {
-        refreshTodos(todos);
-    }
-
     public void refreshTodos(final Bucket<Todo> todos) {
         runOnUiThread(new Runnable() {
             @Override
@@ -215,6 +197,7 @@ public class TodoListActivity extends AppCompatActivity
         }
     }
 
+    // List adapter
     class TodoAdapter extends CursorAdapter {
 
         TodoAdapter() {
@@ -291,5 +274,27 @@ public class TodoListActivity extends AppCompatActivity
         title.setSpan(new StyleSpan(Typeface.ITALIC), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         title.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.empty_task_text_color)), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return title;
+    }
+
+    // Simperium Bucket Listeners
+    @Override
+    public void onSaveObject(Bucket<Todo> todos, Todo todo) {
+        refreshTodos(todos);
+    }
+
+    @Override
+    public void onDeleteObject(Bucket<Todo> todos, Todo todo) {
+        refreshTodos(todos);
+    }
+
+
+    @Override
+    public void onBeforeUpdateObject(Bucket<Todo> bucket, Todo todo) {
+        // noop
+    }
+
+    @Override
+    public void onNetworkChange(Bucket<Todo> todos, Bucket.ChangeType changeType, String s) {
+        refreshTodos(todos);
     }
 }
