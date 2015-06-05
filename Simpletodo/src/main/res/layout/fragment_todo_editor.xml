@@ -8,13 +8,13 @@
         android:id="@+id/editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:inputType="text|"
+        android:inputType="textCapSentences"
         android:hint="@string/task_label_hint"
         android:imeActionLabel="@string/save"
         android:imeActionId="0x100"
         android:imeOptions="actionDone"
         android:gravity="top"
-        android:padding="8dp"
+        android:padding="16dp"
         android:background="@android:color/white"/>
 
 </FrameLayout>
