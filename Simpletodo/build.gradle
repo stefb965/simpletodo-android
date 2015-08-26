@@ -3,10 +3,10 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies { classpath 'com.android.tools.build:gradle:1.2.+' }
+    dependencies { classpath 'com.android.tools.build:gradle:1.3.0' }
 }
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 group "com.simperium"
 
@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.2.1'
 
     // Include Simperium from maven central
     compile 'com.simperium.android:simperium:0.6.4'
