@@ -39,15 +39,14 @@ public class TodoListActivity extends AppCompatActivity
         implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         TrashIconProvider.OnClearCompletedListener, TodoEditorFragment.OnTodoEditorCompleteListener {
 
-    public final int ADD_ACTION_ID = 100;
+    private static final int ADD_ACTION_ID = 100;
 
     private static final String EMPTY_STRING = "";
     private static final String EDITOR_FRAGMENT = "editor_dialog";
 
-    protected TodoAdapter mAdapter;
-    protected Bucket<Todo> mTodoBucket;
-    protected EditText mEditText;
-    protected TrashIconProvider mTrashIconProvider;
+    private TodoAdapter mAdapter;
+    private Bucket<Todo> mTodoBucket;
+    private TrashIconProvider mTrashIconProvider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,8 +59,8 @@ public class TodoListActivity extends AppCompatActivity
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        mEditText = (EditText) findViewById(R.id.new_task_text);
-        mEditText.setOnEditorActionListener(this);
+        EditText editText = (EditText) findViewById(R.id.new_task_text);
+        editText.setOnEditorActionListener(this);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class TodoListActivity extends AppCompatActivity
         checkbox.setChecked(todo.isDone());
     }
 
-    public void refreshTodos(final Bucket<Todo> todos) {
+    private void refreshTodos(final Bucket<Todo> todos) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -172,7 +171,7 @@ public class TodoListActivity extends AppCompatActivity
         Todo.deleteCompleted(mTodoBucket);
     }
 
-    public void onEditTodo(Todo todo) {
+    private void onEditTodo(Todo todo) {
         TodoEditorFragment fragment = TodoEditorFragment.newInstance(todo);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(fragment, EDITOR_FRAGMENT);
@@ -267,7 +266,7 @@ public class TodoListActivity extends AppCompatActivity
         }
     }
 
-    protected SpannableString emptyTitle() {
+    private SpannableString emptyTitle() {
         SpannableString title = new SpannableString(getString(R.string.empty_task_title));
         int length = title.length();
         title.setSpan(new StyleSpan(Typeface.ITALIC), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

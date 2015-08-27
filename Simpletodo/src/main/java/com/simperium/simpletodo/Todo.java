@@ -8,18 +8,16 @@ import com.simperium.client.Query;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
-
 public class Todo extends BucketObject {
 
-    public static final String DONE_PROPERTY = "done";
-    public static final String TITLE_PROPERTY = "title";
-    public static final String ORDER_PROPERTY = "order";
+    private static final String DONE_PROPERTY = "done";
+    private static final String TITLE_PROPERTY = "title";
+    private static final String ORDER_PROPERTY = "order";
 
-    public static final int DONE = 1;
-    public static final int NOT_DONE = 0;
+    private static final int DONE = 1;
+    private static final int NOT_DONE = 0;
 
-    public Todo(String key, JSONObject properties) {
+    private Todo(String key, JSONObject properties) {
         super(key, properties);
     }
 
@@ -79,7 +77,7 @@ public class Todo extends BucketObject {
         return "Todo " + getSimperiumKey() + ": " + getTitle() + " [" + (isDone() ? "✓" : " " ) + "]";
     }
 
-    protected void updateProperties(JSONObject properties) {
+    private void updateProperties(JSONObject properties) {
         this.setProperties(properties);
     }
 

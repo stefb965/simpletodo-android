@@ -23,7 +23,7 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
     private String mLabel;
     private String mKey;
 
-    protected EditText mEditText;
+    private EditText mEditText;
 
     private OnTodoEditorCompleteListener mListener;
 
@@ -32,7 +32,7 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
         return newInstance(todo.getSimperiumKey(), todo.getTitle());
     }
 
-    public static TodoEditorFragment newInstance(String key, String label) {
+    private static TodoEditorFragment newInstance(String key, String label) {
         TodoEditorFragment fragment = new TodoEditorFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_KEY, key);
@@ -115,7 +115,7 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnTodoEditorCompleteListener {
-        public void onTodoEdited(String key, String label);
+        void onTodoEdited(String key, String label);
     }
 
 }

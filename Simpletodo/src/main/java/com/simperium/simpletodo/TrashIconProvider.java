@@ -17,15 +17,10 @@ public class TrashIconProvider extends ActionProvider {
 
     private WeakReference<OnClearCompletedListener> mListener;
 
-    protected Context mContext;
-    protected View mView;
-    protected MenuItem mItem;
-    protected int mBadgeCount = 0;
-    protected TextView mBadge;
+    private int mBadgeCount = 0;
 
     public TrashIconProvider(Context context) {
         super(context);
-        mContext = context;
     }
 
     public void setBadgeCount(int count) {
@@ -43,8 +38,7 @@ public class TrashIconProvider extends ActionProvider {
 
     @Override
     public View onCreateActionView(MenuItem forItem) {
-        mItem = forItem;
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.trash_option_item, null);
         view.setOnClickListener(new View.OnClickListener() {
 
@@ -54,9 +48,8 @@ public class TrashIconProvider extends ActionProvider {
             }
 
         });
-        mView = view;
-        mBadge = (TextView) view.findViewById(R.id.badge);
-        mBadge.setText(String.valueOf(mBadgeCount));
+        TextView badge = (TextView) view.findViewById(R.id.badge);
+        badge.setText(String.valueOf(mBadgeCount));
         return view;
     }
 
@@ -85,7 +78,7 @@ public class TrashIconProvider extends ActionProvider {
         mListener = new WeakReference<>(listener);
     }
 
-    public OnClearCompletedListener getOnClearCompletedListener() {
+    private OnClearCompletedListener getOnClearCompletedListener() {
         if (mListener == null)
             return null;
 

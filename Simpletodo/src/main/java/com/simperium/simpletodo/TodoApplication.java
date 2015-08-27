@@ -10,8 +10,8 @@ import com.simperium.client.BucketNameInvalid;
 public class TodoApplication extends Application {
 
     // Simperium and Bucket objects
-    Simperium mSimperium;
-    Bucket<Todo> mTodoBucket;
+    private Simperium mSimperium;
+    private Bucket<Todo> mTodoBucket;
 
     @Override
     public void onCreate() {
