@@ -12,6 +12,9 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * The To-do editor. Expects to be used with a virtual keyboard.
+ */
 
 public class TodoEditorFragment extends DialogFragment implements TextView.OnEditorActionListener {
 
@@ -26,7 +29,6 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
     private EditText mEditText;
 
     private OnTodoEditorCompleteListener mListener;
-
 
     public static TodoEditorFragment newInstance(Todo todo) {
         return newInstance(todo.getSimperiumKey(), todo.getTitle());
@@ -97,6 +99,7 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
         if (actionId != ACTION_ID)
             return false;
 
+        // Fire the listener to save the Simperium object
         mListener.onTodoEdited(mKey, mEditText.getText().toString());
 
         dismiss();

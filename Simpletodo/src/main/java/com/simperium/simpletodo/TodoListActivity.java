@@ -35,6 +35,11 @@ import com.simperium.android.LoginActivity;
 import com.simperium.client.Bucket;
 import com.simperium.client.BucketObjectMissingException;
 
+/**
+ * The main list of To-dos. The list data is provided by a Simperium ObjectCursor for accessing
+ * and managing To-dos. Note the implementation of Bucket.Listener, which allows for listening
+ * for changes from Simperium
+ */
 public class TodoListActivity extends AppCompatActivity
         implements Bucket.Listener<Todo>, OnItemClickListener, OnEditorActionListener,
         TrashIconProvider.OnClearCompletedListener, TodoEditorFragment.OnTodoEditorCompleteListener {
@@ -54,6 +59,7 @@ public class TodoListActivity extends AppCompatActivity
 
         setContentView(R.layout.todo_list);
 
+        // Initialize the TodoAdapter
         mAdapter = new TodoAdapter();
         ListView listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(mAdapter);
@@ -70,14 +76,17 @@ public class TodoListActivity extends AppCompatActivity
         TodoApplication app = (TodoApplication) getApplication();
 
         // Prompt for login if we don't have an authorized user
+        // The LoginActivity can be provided a custom logo by adding a logo_login drawable resource
         if (app.getSimperium().needsAuthorization()) {
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
 
+        // Get the To-do bucket from the application instance
         mTodoBucket = app.getTodoBucket();
 
+        // Add the bucket listeners and start the bucket
         if (mTodoBucket != null) {
             mTodoBucket.addListener(this);
             mTodoBucket.start();
@@ -85,6 +94,7 @@ public class TodoListActivity extends AppCompatActivity
         }
     }
 
+    // Make sure to stop buckets when the activity is paused
     @Override
     protected void onPause() {
         if (mTodoBucket != null) {
@@ -131,7 +141,7 @@ public class TodoListActivity extends AppCompatActivity
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(tv.getWindowToken(), 0x0);
 
-        // Create a new Todo object, and save to Simperium
+        // Create a new To-do object, and save to Simperium
         Todo todo = mTodoBucket.newObject();
         todo.setTitle(label);
         todo.setOrder(mAdapter.getCount());
@@ -148,6 +158,8 @@ public class TodoListActivity extends AppCompatActivity
         checkbox.setChecked(todo.isDone());
     }
 
+    // The Bucket.Listener callbacks will come from a different thread.
+    // If you need to update the UI, you must use runOnUiThread()
     private void refreshTodos(final Bucket<Todo> todos) {
         runOnUiThread(new Runnable() {
             @Override
@@ -195,7 +207,7 @@ public class TodoListActivity extends AppCompatActivity
         }
     }
 
-    // List adapter
+    // List adapter for the To-do list. Backed by a Simperium ObjectCursor
     class TodoAdapter extends CursorAdapter {
 
         TodoAdapter() {
@@ -203,9 +215,11 @@ public class TodoListActivity extends AppCompatActivity
         }
 
         public void requeryBucket(Bucket<Todo> todos) {
+            // Returns a BucketObject cursor for all To-dos
             swapCursor(Todo.queryAll(todos).execute());
         }
 
+        // Get the bucket object at the position
         public Todo getItem(int position) {
             Bucket.ObjectCursor<Todo> cursor = (Bucket.ObjectCursor<Todo>) super.getItem(position);
             return cursor.getObject();
@@ -213,6 +227,7 @@ public class TodoListActivity extends AppCompatActivity
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
+            // Cast the Cursor to the Simperium ObjectCursor
             Bucket.ObjectCursor<Todo> bucketCursor = (Bucket.ObjectCursor<Todo>) cursor;
             final Todo todo = bucketCursor.getObject();
 
@@ -274,25 +289,30 @@ public class TodoListActivity extends AppCompatActivity
         return title;
     }
 
-    // Simperium Bucket Listeners
+    /** Simperium Bucket Listeners. All listener callbacks are from a separate thread.
+     * See refreshTodos()
+     */
+    // Called after an object is saved
     @Override
     public void onSaveObject(Bucket<Todo> todos, Todo todo) {
         refreshTodos(todos);
     }
 
+    // Called after an object is deleted
     @Override
     public void onDeleteObject(Bucket<Todo> todos, Todo todo) {
         refreshTodos(todos);
     }
 
-
+    // Called before a network change is about to be made to an object
     @Override
     public void onBeforeUpdateObject(Bucket<Todo> bucket, Todo todo) {
         // noop
     }
 
+    // Called after a network change has been applied to an object
     @Override
-    public void onNetworkChange(Bucket<Todo> todos, Bucket.ChangeType changeType, String s) {
+    public void onNetworkChange(Bucket<Todo> todos, Bucket.ChangeType changeType, String simperiumKey) {
         refreshTodos(todos);
     }
 }

@@ -7,6 +7,11 @@ import com.simperium.Simperium;
 import com.simperium.client.Bucket;
 import com.simperium.client.BucketNameInvalid;
 
+/**
+ * The main application class. It is recommended that you create your Simperium client here and keep
+ * private instances of all buckets needed for your application with getters.
+ */
+
 public class TodoApplication extends Application {
 
     // Simperium and Bucket objects

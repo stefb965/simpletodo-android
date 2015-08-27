@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * A custom ActionProvider that shows the count of completed To-Dos in the Toolbar
+ */
 public class TrashIconProvider extends ActionProvider {
 
     public interface OnClearCompletedListener {
