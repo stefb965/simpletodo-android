@@ -21,8 +21,6 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
     private static final String ARG_KEY = "key";
     private static final String ARG_LABEL = "text";
 
-    private static final int ACTION_ID = 0x100;
-
     private String mLabel;
     private String mKey;
 
@@ -96,8 +94,9 @@ public class TodoEditorFragment extends DialogFragment implements TextView.OnEdi
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId != ACTION_ID)
+        if (!isAdded() || actionId != getActivity().getResources().getInteger(R.integer.todo_action_id)) {
             return false;
+        }
 
         // Fire the listener to save the Simperium object
         mListener.onTodoEdited(mKey, mEditText.getText().toString());

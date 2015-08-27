@@ -11,7 +11,7 @@
         android:inputType="textCapSentences"
         android:hint="@string/task_label_hint"
         android:imeActionLabel="@string/save"
-        android:imeActionId="0x100"
+        android:imeActionId="@integer/todo_action_id"
         android:imeOptions="actionDone"
         android:gravity="top"
         android:padding="16dp"
