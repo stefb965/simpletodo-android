@@ -26,13 +26,23 @@
             <EditText
                 android:id="@+id/new_task_text"
                 android:layout_height="wrap_content"
-                android:layout_width="fill_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:singleLine="true"
                 android:imeActionLabel="@string/add"
                 android:imeActionId="100"
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences"
                 android:hint="@string/task_hint" />
+            <TextView android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:background="?attr/selectableItemBackground"
+                android:text="@string/add" />
         </LinearLayout>
         <View
             android:layout_width="fill_parent"

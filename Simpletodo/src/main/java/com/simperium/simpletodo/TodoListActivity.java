@@ -52,6 +52,7 @@ public class TodoListActivity extends AppCompatActivity
     private TodoAdapter mAdapter;
     private Bucket<Todo> mTodoBucket;
     private TrashIconProvider mTrashIconProvider;
+    private EditText mEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +66,16 @@ public class TodoListActivity extends AppCompatActivity
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        EditText editText = (EditText) findViewById(R.id.new_task_text);
-        editText.setOnEditorActionListener(this);
+        mEditText = (EditText) findViewById(R.id.new_task_text);
+        mEditText.setOnEditorActionListener(this);
+
+        View addButton = findViewById(R.id.add_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewTodo();
+            }
+        });
     }
 
     @Override
@@ -125,29 +134,35 @@ public class TodoListActivity extends AppCompatActivity
 
     @Override
     public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
-        if (actionId != ADD_ACTION_ID || mTodoBucket == null)
+        if (actionId != ADD_ACTION_ID)
             return false;
 
+        addNewTodo();
+
+        return true;
+    }
+
+    // Create a new To-do object, and save to Simperium
+    private void addNewTodo() {
+        if (mTodoBucket == null || mEditText == null) return;
+
         // clear the text view
-        String label = tv.getText().toString();
+        String label = mEditText.getText().toString();
 
         // we don't create blank tasks, but leave the keyboard
         if (label.equals(EMPTY_STRING)) {
-            return true;
+            return;
         }
 
-        tv.getEditableText().clear();
+        mEditText.getEditableText().clear();
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(tv.getWindowToken(), 0x0);
+        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0x0);
 
-        // Create a new To-do object, and save to Simperium
         Todo todo = mTodoBucket.newObject();
         todo.setTitle(label);
         todo.setOrder(mAdapter.getCount());
         todo.save();
-
-        return true;
     }
 
     @Override
